@@ -49,6 +49,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
+		c.Env = append(c.Env, os.Environ()...)
 		c.Env = append(c.Env, env...)
 
 		output, _ := c.CombinedOutput()
