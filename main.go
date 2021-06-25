@@ -12,19 +12,17 @@ import (
 )
 
 var (
-	flagVerbose = false
-)
-
-var (
 	//go:embed .semver.yaml
 	version string
+
+	flagVerbose = false
 )
 
 var rootCmd = &cobra.Command{
 	Use:          "readenv <.env file> <your command>",
 	Short:        "Read file as dot env file and execute command with this env.",
 	Args:         cobra.MinimumNArgs(2),
-	Version:      strings.Split(strings.Split(version, "\n")[3], ":")[1][1:],
+	Version:      getVersion(),
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dotEnvFile := args[0]
@@ -47,20 +45,21 @@ var rootCmd = &cobra.Command{
 		}
 
 		if flagVerbose {
-			fmt.Println(shell, "; ", file, "; ", strings.Join(args[1:], " "))
+			fmt.Println(shell, "; ", dotEnvFile, "; ", strings.Join(args[1:], " "))
 		}
 
 		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
 		c.Env = append(c.Env, env...)
 
-		output, err := c.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("%v: command fail", err)
-		}
+		output, _ := c.CombinedOutput()
 
 		fmt.Println(string(output))
 		return nil
 	},
+}
+
+func getVersion() string {
+	return strings.Split(strings.Split(version, "\n")[3], ":")[1][1:]
 }
 
 func main() {
