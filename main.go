@@ -41,7 +41,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		if flagVerbose {
-			fmt.Println(shell, "; ", file, "; ", strings.Join(args[1:])
+			fmt.Println(shell, "; ", file, "; ", strings.Join(args[1:], " "))
 		}
 
 		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
