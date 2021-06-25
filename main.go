@@ -49,13 +49,16 @@ var rootCmd = &cobra.Command{
 		}
 
 		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
+
 		c.Env = append(c.Env, os.Environ()...)
 		c.Env = append(c.Env, env...)
 
 		c.Stderr = os.Stderr
 		c.Stdout = os.Stdout
 
-		_ = c.Run()
+		if err := c.Run(); err != nil {
+			fmt.Println(err)
+		}
 
 		return nil
 	},
