@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -14,11 +15,16 @@ var (
 	flagVerbose = false
 )
 
+var (
+	//go:embed .semver.yaml
+	version string
+)
+
 var rootCmd = &cobra.Command{
 	Use:          "readenv <.env file> <your command>",
 	Short:        "Read file as dot env file and execute command with this env.",
 	Args:         cobra.MinimumNArgs(2),
-	Version:      "0.0.1",
+	Version:      strings.Split(strings.Split(version, "\n")[3], ":")[1][1:],
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dotEnvFile := args[0]
