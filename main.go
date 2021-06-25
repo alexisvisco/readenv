@@ -11,7 +11,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:          "readenv <.env file> <your comamnd>",
+	Use:          "readenv <.env file> <your command>",
 	Short:        "readenv is a tool for reading .env files",
 	Args:         cobra.MinimumNArgs(2),
 	SilenceUsage: true,
