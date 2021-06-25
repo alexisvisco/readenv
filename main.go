@@ -38,6 +38,13 @@ var rootCmd = &cobra.Command{
 		}
 
 		env := strings.Split(string(file), "\n")
+		var envTrimmed []string
+
+		for _, s := range env {
+			if s != "" {
+				envTrimmed = append(envTrimmed, s)
+			}
+		}
 
 		shell := os.Getenv("SHELL")
 		if shell == "" {
@@ -51,7 +58,7 @@ var rootCmd = &cobra.Command{
 		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
 
 		c.Env = append(c.Env, os.Environ()...)
-		c.Env = append(c.Env, env...)
+		c.Env = append(c.Env, envTrimmed...)
 
 		c.Stderr = os.Stderr
 		c.Stdout = os.Stdout
