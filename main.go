@@ -52,9 +52,11 @@ var rootCmd = &cobra.Command{
 		c.Env = append(c.Env, os.Environ()...)
 		c.Env = append(c.Env, env...)
 
-		output, _ := c.CombinedOutput()
+		c.Stderr = os.Stderr
+		c.Stdout = os.Stdout
 
-		fmt.Println(string(output))
+		_ = c.Run()
+
 		return nil
 	},
 }
