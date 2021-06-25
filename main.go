@@ -11,9 +11,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "readenv <.env file> <your comamnd>",
-	Short: "readenv is a tool for reading .env files",
-	Args:  cobra.MinimumNArgs(2),
+	Use:          "readenv <.env file> <your comamnd>",
+	Short:        "readenv is a tool for reading .env files",
+	Args:         cobra.MinimumNArgs(2),
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dotEnvFile := args[0]
 		if f, err := os.Stat(dotEnvFile); os.IsNotExist(err) {
@@ -27,14 +28,15 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("%v: unable to read dot env file", err)
 		}
 
-		command := strings.Split(string(file), "\n")[1:]
+		env := strings.Split(string(file), "\n")
 
 		shell := os.Getenv("SHELL")
 		if shell == "" {
 			return errors.New("SHELL environment variable is not set")
 		}
 
-		c := exec.Command(shell, "-c", strings.Join(command, " "))
+		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
+		c.Env = append(c.Env, env...)
 
 		output, err := c.CombinedOutput()
 		if err != nil {
