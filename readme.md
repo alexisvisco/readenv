@@ -8,7 +8,7 @@ Make sure you have a SHELL environment variable.
 #### Install
 
 ```bash
-go install github.com/alexisvisco/readenv@latest
+go install github.com/alexisvisco/readenv@v0.0.6
 ```
 
 Make sure ~/go/bin is in your path variable.
