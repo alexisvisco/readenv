@@ -10,10 +10,15 @@ import (
 	"strings"
 )
 
+var (
+	flagVerbose = false
+)
+
 var rootCmd = &cobra.Command{
 	Use:          "readenv <.env file> <your command>",
-	Short:        "readenv is a tool for reading .env files",
+	Short:        "Read file as dot env file and execute command with this env.",
 	Args:         cobra.MinimumNArgs(2),
+	Version:      "0.0.1",
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dotEnvFile := args[0]
@@ -35,6 +40,10 @@ var rootCmd = &cobra.Command{
 			return errors.New("SHELL environment variable is not set")
 		}
 
+		if flagVerbose {
+			fmt.Println(shell, "; ", file, "; ", strings.Join(args[1:])
+		}
+
 		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
 		c.Env = append(c.Env, env...)
 
@@ -44,12 +53,12 @@ var rootCmd = &cobra.Command{
 		}
 
 		fmt.Println(string(output))
-
 		return nil
 	},
 }
 
 func main() {
+	rootCmd.Flags().BoolVarP(&flagVerbose, "verbose", "v", false, "add verbosity for debugging")
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
