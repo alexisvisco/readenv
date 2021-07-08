@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
 )
 
@@ -41,7 +42,7 @@ var rootCmd = &cobra.Command{
 		var envTrimmed []string
 
 		for _, s := range env {
-			if s != "" {
+			if s != "" || !strings.HasPrefix(s, "#") {
 				envTrimmed = append(envTrimmed, s)
 			}
 		}
@@ -52,7 +53,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		if flagVerbose {
-			fmt.Println(shell, "; ", dotEnvFile, "; ", strings.Join(args[1:], " "))
+			fmt.Println("readenv:", shell, "; ", dotEnvFile, "; ", strings.Join(args[1:], " "))
 		}
 
 		c := exec.Command(shell, "-c", strings.Join(args[1:], " "))
@@ -62,6 +63,7 @@ var rootCmd = &cobra.Command{
 
 		c.Stderr = os.Stderr
 		c.Stdout = os.Stdout
+		c.Stdin = os.Stdin
 
 		if err := c.Run(); err != nil {
 			fmt.Println(err)
@@ -76,8 +78,25 @@ func getVersion() string {
 }
 
 func main() {
+	checkVersion()
+
+	exitCode := make(chan int)
 	rootCmd.Flags().BoolVarP(&flagVerbose, "verbose", "v", false, "add verbosity for debugging")
-	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
+
+	go func() {
+		err := rootCmd.Execute()
+		if err != nil {
+			exitCode <- 1
+		}
+		exitCode <- 0
+	}()
+
+	end := make(chan os.Signal, 1)
+	signal.Notify(end, os.Interrupt, os.Kill)
+	select {
+	case <-end:
+		os.Exit(<-exitCode)
+	case code := <-exitCode:
+		os.Exit(code)
 	}
 }
