@@ -43,7 +43,7 @@ var rootCmd = &cobra.Command{
 
 		for _, s := range env {
 			// only add the env variable if it not start with # or if it is not an empty line
-			if strings.Trim(s, " ") != "" || !strings.HasPrefix(s, "#") {
+			if strings.Trim(s, " ") != "" && !strings.HasPrefix(s, "#") {
 				envTrimmed = append(envTrimmed, s)
 			}
 		}
