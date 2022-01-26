@@ -10,7 +10,7 @@ Lines starting with `#` are ignoreds.
 #### Install
 
 ```bash
-go install github.com/alexisvisco/readenv@v0.0.7
+go install github.com/alexisvisco/readenv@latest
 ```
 
 Make sure ~/go/bin is in your path variable.
